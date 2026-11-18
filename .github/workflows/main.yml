@@ -23,4 +23,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: MinehavvyRoom-JAR
-          path: target/MinehavvyRoom-1.0.jar
+          path: target/MinehavvyRoom-2.0.0.jar
