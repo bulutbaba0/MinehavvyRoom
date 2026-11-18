@@ -36,8 +36,8 @@ public final class Main extends JavaPlugin implements Listener, CommandExecutor 
         loadLocations();
 
         getServer().getPluginManager().registerEvents(this, this);
-        getCommand("minehavvyroom").setExecutor(this);
-        getCommand("minehavvyroom2").setExecutor(this);
+        if (getCommand("minehavvyroom") != null) getCommand("minehavvyroom").setExecutor(this);
+        if (getCommand("minehavvyroom2") != null) getCommand("minehavvyroom2").setExecutor(this);
         getLogger().info("MinehavvyRoom eklentisi aktif! - FALCONR7");
 
         Bukkit.getScheduler().runTaskTimer(this, () -> {
@@ -57,11 +57,9 @@ public final class Main extends JavaPlugin implements Listener, CommandExecutor 
                     active = true;
                     fighters.addAll(inside);
 
-                    // Oyuncuları spawn1 ve spawn2 noktalarına ışınla
                     if (spawn1 != null) fighters.get(0).teleport(spawn1);
                     if (spawn2 != null) fighters.get(1).teleport(spawn2);
 
-                    // Kapıyı NORMAL CAM ile kapat
                     setBlocks(Material.GLASS);
 
                     for (Player p : fighters) {
@@ -89,55 +87,60 @@ public final class Main extends JavaPlugin implements Listener, CommandExecutor 
             return true;
         }
 
-        if (command.getName().equalsIgnoreCase("minehavvyroom2")) {
-            spawn2 = p.getLocation();
-            saveLocations();
-            p.sendMessage(ChatColor.GREEN + "2. Oyuncunun başlangıç noktası (spawn2) ayarlandı!");
-            return true;
-        }
-
-        if (args.length > 0) {
-            if (args[0].equalsIgnoreCase("kapi1")) {
-                Block target = p.getTargetBlockExact(5);
-                if (target == null) {
-                    p.sendMessage(ChatColor.RED + "Bir bloğa bakarak komutu gir!");
-                    return true;
-                }
-                door1 = target.getLocation();
-                saveLocations();
-                p.sendMessage(ChatColor.GREEN + "Kapının 1. köşesi ayarlandı!");
-            } else if (args[0].equalsIgnoreCase("kapi2")) {
-                Block target = p.getTargetBlockExact(5);
-                if (target == null) {
-                    p.sendMessage(ChatColor.RED + "Bir bloğa bakarak komutu gir!");
-                    return true;
-                }
-                door2 = target.getLocation();
-                saveLocations();
-                p.sendMessage(ChatColor.GREEN + "Kapının 2. köşesi ayarlandı!");
-            } else if (args[0].equalsIgnoreCase("iceri")) {
-                center = p.getLocation();
-                saveLocations();
-                p.sendMessage(ChatColor.GREEN + "Oda içi kontrol noktası ayarlandı!");
-            } else if (args[0].equalsIgnoreCase("disari")) {
-                exitLoc = p.getLocation();
-                saveLocations();
-                p.sendMessage(ChatColor.GREEN + "Oda dışı atılma noktası ayarlandı!");
-            } else if (args[0].equalsIgnoreCase("spawn1")) {
-                spawn1 = p.getLocation();
-                saveLocations();
-                p.sendMessage(ChatColor.GREEN + "1. Oyuncunun başlangıç noktası (spawn1) ayarlandı!");
-            } else if (args[0].equalsIgnoreCase("spawn2")) {
+        try {
+            if (command.getName().equalsIgnoreCase("minehavvyroom2")) {
                 spawn2 = p.getLocation();
                 saveLocations();
                 p.sendMessage(ChatColor.GREEN + "2. Oyuncunun başlangıç noktası (spawn2) ayarlandı!");
-            } else if (args[0].equalsIgnoreCase("sifirla")) {
-                resetRoom();
-                p.sendMessage(ChatColor.GREEN + "Oda sıfırlandı ve cam kapı açıldı!");
+                return true;
             }
-        } else {
-            p.sendMessage(ChatColor.YELLOW + "/minehavvy <kapi1 | kapi2 | iceri | disari | spawn1 | spawn2 | sifirla>");
-            p.sendMessage(ChatColor.YELLOW + "Kısayol: /minehavvyroom2");
+
+            if (args.length > 0) {
+                if (args[0].equalsIgnoreCase("kapi1")) {
+                    Block target = p.getTargetBlockExact(5);
+                    if (target == null) {
+                        door1 = p.getLocation().getBlock().getLocation();
+                    } else {
+                        door1 = target.getLocation();
+                    }
+                    saveLocations();
+                    p.sendMessage(ChatColor.GREEN + "Kapının 1. köşesi ayarlandı!");
+                } else if (args[0].equalsIgnoreCase("kapi2")) {
+                    Block target = p.getTargetBlockExact(5);
+                    if (target == null) {
+                        door2 = p.getLocation().getBlock().getLocation();
+                    } else {
+                        door2 = target.getLocation();
+                    }
+                    saveLocations();
+                    p.sendMessage(ChatColor.GREEN + "Kapının 2. köşesi ayarlandı!");
+                } else if (args[0].equalsIgnoreCase("iceri")) {
+                    center = p.getLocation();
+                    saveLocations();
+                    p.sendMessage(ChatColor.GREEN + "Oda içi kontrol noktası ayarlandı!");
+                } else if (args[0].equalsIgnoreCase("disari")) {
+                    exitLoc = p.getLocation();
+                    saveLocations();
+                    p.sendMessage(ChatColor.GREEN + "Oda dışı atılma noktası ayarlandı!");
+                } else if (args[0].equalsIgnoreCase("spawn1")) {
+                    spawn1 = p.getLocation();
+                    saveLocations();
+                    p.sendMessage(ChatColor.GREEN + "1. Oyuncunun başlangıç noktası (spawn1) ayarlandı!");
+                } else if (args[0].equalsIgnoreCase("spawn2")) {
+                    spawn2 = p.getLocation();
+                    saveLocations();
+                    p.sendMessage(ChatColor.GREEN + "2. Oyuncunun başlangıç noktası (spawn2) ayarlandı!");
+                } else if (args[0].equalsIgnoreCase("sifirla")) {
+                    resetRoom();
+                    p.sendMessage(ChatColor.GREEN + "Oda sıfırlandı ve cam kapı açıldı!");
+                }
+            } else {
+                p.sendMessage(ChatColor.YELLOW + "/minehavvyroom <kapi1 | kapi2 | iceri | disari | spawn1 | spawn2 | sifirla>");
+                p.sendMessage(ChatColor.YELLOW + "Kısayol: /minehavvyroom2");
+            }
+        } catch (Exception e) {
+            p.sendMessage(ChatColor.RED + "Komut işlenirken bir hata oluştu: " + e.getMessage());
+            e.printStackTrace();
         }
         return true;
     }
@@ -187,6 +190,7 @@ public final class Main extends JavaPlugin implements Listener, CommandExecutor 
     }
 
     private void saveLocations() {
+        if (getConfig() == null) return;
         getConfig().set("door1", door1);
         getConfig().set("door2", door2);
         getConfig().set("center", center);
@@ -197,6 +201,7 @@ public final class Main extends JavaPlugin implements Listener, CommandExecutor 
     }
 
     private void loadLocations() {
+        if (getConfig() == null) return;
         door1 = getConfig().getLocation("door1");
         door2 = getConfig().getLocation("door2");
         center = getConfig().getLocation("center");
