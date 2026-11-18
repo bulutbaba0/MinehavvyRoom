@@ -1,0 +1,12 @@
+name: MinehavvyRoom
+version: 1.0
+main: com.falconr7.room1v1.Main
+api-version: 1.21
+commands:
+  minehavvyroom:
+    description: MinehavvyRoom 1v1 oda yönetim komutu
+    permission: op
+    aliases: [minehavvy, mroom, 1v1room]
+  minehavvyroom2:
+    description: 2. oyuncu spawn noktası kısayolu
+    permission: op
